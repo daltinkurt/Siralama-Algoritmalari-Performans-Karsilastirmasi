@@ -45,7 +45,7 @@ Aşağıdaki ekran görüntüsü, 100.000 elemanlık veri kümesi üzerinde ger�
 - Doğruluk kontrolü (✅ / ❌)
 - Tekrar Sayısı desteği
 
-![Sorting Benchmark Pro](screenshots/benchmark-results.png)
+![Sorting Benchmark Pro](Sir_Alg_Per_Ana/screenshots/benchmark-results.png)
 
 ---
 
@@ -56,7 +56,7 @@ Benchmark tamamlandıktan sonra algoritmalar aşağıdaki grafiklerle karşıla�
 - Süre Grafiği (ms)
 - Toplam Adım Grafiği
 
-![Charts](screenshots/charts.png)
+![Charts](Sir_Alg_Per_Ana/screenshots/charts.png)
 
 # Desteklenen Algoritmalar
 
