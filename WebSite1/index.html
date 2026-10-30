@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>Sıralama Algoritmaları Performans Karşılaştırması</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.js" integrity="sha512-5m2r+g00HDHnhXQDbRLAfZBwPpPCaK+wPLV6lm8VQ+09ilGdHfXV7IVyKPkLOTfi4vTTUVJnz7ELs7cA87/GMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Segoe UI, Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .panel {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+            button:hover {
+                background: #1d4ed8;
+            }
+
+        .progress {
+            width: 100%;
+            height: 28px;
+            background: #0f172a;
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            transition: .3s;
+            background: linear-gradient( 90deg, #22c55e, #16a34a );
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #334155;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #334155;
+        }
+
+        .fastest {
+            background: #14532d;
+        }
+
+        .slowest {
+            background: #7f1d1d;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+            .card h4 {
+                margin: 0 0 10px 0;
+            }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(450px,1fr));
+            gap: 20px;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .skipped {
+            background: #6b7280 !important;
+            color: #ffffff;
+            opacity: 0.85;
+        }
+
+            .skipped td {
+                color: #ffffff;
+            }
+
+        div.table-resposive {
+            overflow: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>
+        🚀 Sıralama Algoritmaları Performans Karşılaştırması
+    </h1>
+
+    <div class="panel">
+
+        <div class="controls">
+
+            <div>
+
+                <label>Dizi Tipi</label>
+
+                <select id="datasetType">
+
+                    <option value="random">
+                        Rastgele
+                    </option>
+
+                    <option value="sorted">
+                        Sıralı
+                    </option>
+
+                    <option value="reverse">
+                        Ters Sıralı
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label>Veri Boyutu</label>
+
+                <select id="datasetSize">
+
+                    <option value="1000">
+                        Küçük (1.000)
+                    </option>
+
+                    <option value="10000">
+                        Orta (10.000)
+                    </option>
+
+                    <option value="50000">
+                        Büyük (50.000)
+                    </option>
+
+                    <option value="100000">
+                        Çok Büyük (100.000)
+                    </option>
+
+                    <option value="250000">
+                        Devasa (250.000)
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label>Worker Sayısı</label>
+
+                <select id="workerCount">
+
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4" selected>4</option>
+                    <option value="8">8</option>
+
+                </select>
+
+            </div>
+            <div>
+
+                <label>Algoritmalar</label>
+
+                <select id="algorithmSelect" multiple size="5"></select>
+
+                <button id="selectAllBtn">
+                    Tümünü Seç
+                </button>
+
+                <button id="clearAllBtn">
+                    Temizle
+                </button>
+
+            </div>
+            <div>
+
+                <label>Tekrar Sayısı</label>
+
+                <select id="repeatCount">
+
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+
+                </select>
+
+            </div>
+            <div>
+
+                <label>&nbsp;</label>
+
+                <button id="runBtn">
+                    Benchmark Başlat
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h3>Durum</h3>
+
+        <div id="currentStatus">
+
+            Hazır
+
+        </div>
+
+        <br>
+
+        <div class="progress">
+
+            <div id="progressFill"
+                 class="progress-fill">
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h4>
+                    Algoritma Sayısı
+                </h4>
+
+                <div id="algorithmCount">
+
+                    20
+
+                </div>
+
+            </div>
+            <div class="card">
+                <h4>Çalıştırılan</h4>
+                <div id="executedCount">0</div>
+            </div>
+
+            <div class="card">
+                <h4>Atlanan</h4>
+                <div id="skippedCount">0</div>
+            </div>
+            <div class="card">
+
+                <h4>
+                    Tekrar Sayısı
+                </h4>
+
+                <div id="currentRepeat">
+                    5
+                </div>
+
+            </div>
+            <div class="card">
+
+                <h4>
+                    En Hızlı
+                </h4>
+
+                <div id="bestAlgorithm">
+
+                    -
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h4>
+                    En Yavaş
+                </h4>
+
+                <div id="worstAlgorithm">
+
+                    -
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h4>
+                    Toplam Süre
+                </h4>
+
+                <div id="totalTime">
+
+                    -
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h3>
+            Sonuçlar
+        </h3>
+        <div class="table-resposive">
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Algoritma</th>
+                        <th>Karşılaştırma</th>
+                        <th>Swap</th>
+                        <th>Atama</th>
+                        <th>Toplam Adım</th>
+                        <th>Süre (ms)</th>
+                        <th>Test</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="resultBody">
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <div class="chart-grid">
+
+        <div class="panel">
+
+            <h3>
+                Süre Grafiği
+            </h3>
+
+            <canvas id="timeChart">
+            </canvas>
+
+        </div>
+
+        <div class="panel">
+
+            <h3>
+                Adım Grafiği
+            </h3>
+
+            <canvas id="stepChart">
+            </canvas>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="./main.js"></script>
+
+</body>
+
+</html>
