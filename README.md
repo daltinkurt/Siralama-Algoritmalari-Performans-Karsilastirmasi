@@ -1,4 +1,4 @@
-﻿# 🚀 Sorting Benchmark Pro
+﻿# 🚀 Sıralama Algoritmaları Performans Analizi
 
 Modern web teknolojileri kullanılarak geliştirilmiş, çok algoritmalı sıralama benchmark uygulaması.
 
